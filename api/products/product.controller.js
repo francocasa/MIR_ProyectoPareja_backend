@@ -69,6 +69,7 @@ async function createProduct(req, res) {
 }
 
 async function getAllProducts(req, res) {
+  console.log(`getAllProducts`);
   try {
     const products = await prisma.product.findMany({
       include: { size: true, brand: true, material: true, category: true }, // Incluir la categoría
