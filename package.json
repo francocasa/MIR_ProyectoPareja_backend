@@ -1,0 +1,21 @@
+{
+  "name": "node-stripe-simple",
+  "version": "0.1.0",
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "cloudinary": "^2.5.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.17.3",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "prisma": "^5.22.0",
+    "stripe": "^12.9.0",
+    "zod": "^3.23.8"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  }
+}

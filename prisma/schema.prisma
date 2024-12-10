@@ -1,0 +1,130 @@
+// Prisma schema file (schema.prisma)
+
+datasource db {
+  provider = "postgresql"  // Si usas PostgreSQL
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Modelos anteriores
+
+model User {
+  id          Int          @id @default(autoincrement()) // ID único de usuario
+  name        String       // Nombre y apellidos del usuario (almacenado en un solo campo)
+  email       String       @unique // Correo electrónico del usuario (único)
+  phoneNumber String?      // Número de teléfono del usuario (opcional)
+  address     String?      // Dirección del usuario (opcional)
+  transactions Transaction[] // Relación con las transacciones
+  carts       Cart[]       // Relación con los carritos de los usuarios
+}
+
+
+
+
+model Transaction {
+  id        Int      @id @default(autoincrement())
+  amount    Int
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+// Nuevos modelos
+// Tabla de Categorías
+model Category {
+  id          Int        @id @default(autoincrement()) // ID único de categoría
+  name        String     // Nombre de la categoría (Bikini, Faldas, etc.)
+  products    Product[]  // Relación con los productos
+}
+
+// Modelo de Producto
+model Product {
+  id          Int        @id @default(autoincrement()) // ID único para cada producto
+  name        String
+  price       Float
+  description String?
+  stock       Int
+  sizeId      Int
+  brandId     Int
+  materialId  Int
+  categoryId  Int // Este es el campo que falta
+  imageUrl    String?
+  category    Category  @relation(fields: [categoryId], references: [id]) // Relación con la categoría
+  size        Size      @relation(fields: [sizeId], references: [id])
+  brand       Brand     @relation(fields: [brandId], references: [id])
+  material    Material  @relation(fields: [materialId], references: [id])
+
+  // Relación con el carrito
+  cartItems   CartItem[] // Relación con los ítems en el carrito (esto establece la relación bidireccional)
+}
+
+
+
+// Tabla de Tallas
+model Size {
+  id          Int        @id @default(autoincrement()) // ID único para talla
+  name        String     // Nombre de la talla (Ej. S, M, L, etc.)
+  measurement Range?     // Rango de medidas de la talla (opcional)
+  products    Product[]  // Relación con productos (una talla puede tener muchos productos)
+}
+// Tabla de Rangos de medidas
+model Range {
+  id          Int        @id @default(autoincrement()) 
+  sizeId      Int        @unique  // Agregar @unique aquí
+  minMeasure  Float
+  maxMeasure  Float
+  size        Size       @relation(fields: [sizeId], references: [id])
+}
+
+
+// Tabla de Marcas
+model Brand {
+  id          Int        @id @default(autoincrement())
+  name        String
+  products    Product[]  // Relación con productos
+}
+
+// Tabla de Materiales
+model Material {
+  id          Int        @id @default(autoincrement())
+  name        String
+  products    Product[]  // Relación con productos
+}
+
+// Tabla de Usuarios (Admin)
+model Admin {
+   id          Int        @id @default(autoincrement()) 
+   username    String     @unique
+   password    String
+   createdAt   DateTime   @default(now()) 
+   updatedAt   DateTime   @updatedAt
+   // Elimina la relación con `Cart`
+}
+
+// Tabla de Carrito de Compras (Cart)
+model Cart {
+  id          Int        @id @default(autoincrement()) 
+  userId      Int
+  createdAt   DateTime   @default(now()) 
+  updatedAt   DateTime   @updatedAt
+  items       CartItem[] // Relación con los ítems en el carrito
+
+  user        User       @relation(fields: [userId], references: [id]) // Relación con el User
+}
+
+
+
+// Tabla de Ítems en el Carrito
+model CartItem {
+  id          Int        @id @default(autoincrement()) 
+  cartId      Int
+  productId   Int
+  quantity    Int
+  price       Float
+
+  cart        Cart       @relation(fields: [cartId], references: [id])
+  product     Product    @relation(fields: [productId], references: [id]) // Relación con el producto
+}
